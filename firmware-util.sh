@@ -12,8 +12,20 @@
 #
 
 #where the stuff is
-export local_source="file://$(cd $(dirname ${BASH_SOURCE:-$0});pwd)/"
+export script_path=${BASH_SOURCE:-$0}
+[[ $1 =~ ^/  ]] && a=$script_path || a=`pwd`/$script_path
+while [ -h ${a} ]
+do
+   b=`ls -ld ${a}|awk '{print $NF}'`
+   c=`ls -ld ${a}|awk '{print $(NF-2)}'`
+   [[ $b =~ ^/ ]] && a=${b}  || a=`dirname ${c}`/${b}
+done
+export script_path=${a}
+export root=$(cd $(dirname ${script_path});pwd)
+echo root=${root}
+export local_source="file://${root}/"
 script_url="${local_source}/scripts/"
+
 
 #ensure output of system tools in en-us for parsing
 export LC_ALL=C
